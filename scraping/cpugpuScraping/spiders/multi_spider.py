@@ -37,9 +37,13 @@ class CpusSpider(scrapy.Spider):
                 'l3_cache': cpu.xpath('td[7]//text()').extract_first(),
                 'tdp': cpu.xpath('td[8]//text()').extract_first(),
                 'released': cpu.xpath('td[9]//text()').extract_first(),
-            }           
+            }    
 
-            yield JsonRequest(url='http://localhost/api/cpu/add', headers={'X-AUTH-TOKEN':apikey}, data=data)
+            # print(data)  
+
+            yield data     
+
+            # yield JsonRequest(url='http://localhost/api/cpu/add', headers={'X-AUTH-TOKEN':apikey}, data=data)
 
 class GpusSpider(scrapy.Spider):
     name = "gpus"
@@ -74,11 +78,15 @@ class GpusSpider(scrapy.Spider):
                 'memory': gpu.xpath('td[5]//text()').extract_first(),
                 'gpu_clock': gpu.xpath('td[6]//text()').extract_first(),
                 'memory_clock': gpu.xpath('td[7]//text()').extract_first(),
-            }                           
+            }                  
 
-            yield JsonRequest(url='http://localhost/api/gpu/add', headers={'X-AUTH-TOKEN':apikey}, data=data)
+            # print(data)
 
-process = CrawlerProcess()
-process.crawl(CpusSpider)
-process.crawl(GpusSpider)
-process.start()
+            yield data       
+
+            # yield JsonRequest(url='http://localhost/api/gpu/add', headers={'X-AUTH-TOKEN':apikey}, data=data)
+
+#process = CrawlerProcess()
+#process.crawl(CpusSpider)
+#process.crawl(GpusSpider)
+#process.start()

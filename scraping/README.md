@@ -20,7 +20,10 @@ Go to your database and take admin **api_key**.
 Remplace **apiKey** in <em>spiders/multi_spider.py</em>.
 
 #### Run
+In /scraping, execute the following command:
 
 ```bash
-scrapy crawl
+scrapy crawl -O ./out.json ssds
 ```
+
+Great Scrapy Quick Started Example: https://www.trickster.dev/post/scrapy-simplified-developing-a-single-file-web-scraper/
