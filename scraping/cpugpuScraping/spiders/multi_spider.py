@@ -1,8 +1,5 @@
 import scrapy
 
-from scrapy.http import JsonRequest
-from scrapy.crawler import CrawlerProcess
-
 apikey = 90294
 
 class CpusSpider(scrapy.Spider):
@@ -39,11 +36,9 @@ class CpusSpider(scrapy.Spider):
                 'released': cpu.xpath('td[9]//text()').extract_first(),
             }    
 
-            # print(data)  
 
             yield data     
 
-            # yield JsonRequest(url='http://localhost/api/cpu/add', headers={'X-AUTH-TOKEN':apikey}, data=data)
 
 class GpusSpider(scrapy.Spider):
     name = "gpus"
@@ -80,13 +75,39 @@ class GpusSpider(scrapy.Spider):
                 'memory_clock': gpu.xpath('td[7]//text()').extract_first(),
             }                  
 
-            # print(data)
 
             yield data       
 
-            # yield JsonRequest(url='http://localhost/api/gpu/add', headers={'X-AUTH-TOKEN':apikey}, data=data)
 
-#process = CrawlerProcess()
-#process.crawl(CpusSpider)
-#process.crawl(GpusSpider)
-#process.start()
+class SsdsSpider(scrapy.Spider):
+    name = "ssds"
+
+    def start_requests(self):
+        urls = [
+            'https://www.techpowerup.com/ssd-specs/search/?market=2&released={year}'.format(year=y) for y in range(2014, 2025)
+        ]
+        for url in urls:
+            yield scrapy.Request(url=url, callback=self.parse)            
+
+    def parse(self, response):
+        for idx_ssd, ssd in enumerate(response.xpath('//*[@class="drives-desktop-table"]//tr')):
+            # The first two rows are empty
+            if idx_ssd < 2:
+                continue
+
+
+            data = {
+                'product_name': ssd.xpath('td[1]//div//a//text()').extract_first(),
+                'max_capacity': ssd.xpath('td[1]//div//div//a[last()]//text()').extract_first(),
+                'link': ssd.xpath('td[1]//div//a//@href').extract_first(),
+                'type': ssd.xpath('td[2]//text()').extract_first().replace("\n", "").replace("\t", ""),
+                'format': ssd.xpath('td[3]//text()').extract_first(),
+                'interface': ssd.xpath('td[4]//text()').extract_first(),
+                'released': ssd.xpath('td[5]//text()').extract_first(),
+                'controller': ssd.xpath('td[6]//text()').extract_first().replace("\n", "").replace("\t", ""),
+                'dram': ssd.xpath('td[7]//text()').extract_first().replace("\n", "").replace("\t", ""),
+            }    
+
+
+            yield data     
+
